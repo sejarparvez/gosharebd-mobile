@@ -5,19 +5,18 @@
     "clientKind": "git",
     "useIgnoreFile": true
   },
-
   "files": {
     "ignoreUnknown": true,
     "includes": [
-      "**",
-      "!node_modules",
-      "!.next",
-      "!dist",
-      "!build",
-      "!app/globals.css"
+      "app/**/*.ts",
+      "app/**/*.tsx",
+      "components/**/*.ts",
+      "components/**/*.tsx",
+      "hooks/**/*.ts",
+      "constants/**/*.ts",
+      "!!**/components/ui/gluestack-ui-provider"
     ]
   },
-
   "formatter": {
     "enabled": true,
     "indentStyle": "space",

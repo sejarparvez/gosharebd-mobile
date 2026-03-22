@@ -1,12 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * No CSS custom properties needed for colors.
+ * tailwind.config.js uses plain hex values so NativeWind can resolve
+ * them at build time into static StyleSheet objects — avoiding the
+ * flash-then-grey bug caused by CSS var() not being supported in
+ * React Native Web's StyleSheet.create().
+ */
+
 :root {
-  --font-display:
-    Spline Sans, Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji,
-    Segoe UI Symbol, Noto Color Emoji;
-  --font-mono:
-    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono,
-    Courier New, monospace;
-  --font-rounded:
-    "SF Pro Rounded", "Hiragino Maru Gothic ProN", Meiryo, "MS PGothic",
-    sans-serif;
+  --font-display: "Spline Sans", Inter, ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+  --font-rounded: "SF Pro Rounded", "Hiragino Maru Gothic ProN", Meiryo,
+    "MS PGothic", sans-serif;
   --font-serif: Georgia, "Times New Roman", serif;
 }
