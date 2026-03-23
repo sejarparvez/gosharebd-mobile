@@ -1,16 +1,17 @@
 'use client';
-import React, { useMemo } from 'react';
-import { Text, View } from 'react-native';
 import { PrimitiveIcon, UIIcon } from '@gluestack-ui/core/icon/creator';
-import { tva } from '@gluestack-ui/utils/nativewind-utils';
+import type { VariantProps } from '@gluestack-ui/utils/nativewind-utils';
 import {
-  withStyleContext,
+  tva,
   useStyleContext,
+  withStyleContext,
 } from '@gluestack-ui/utils/nativewind-utils';
 import { cssInterop } from 'nativewind';
-import type { VariantProps } from '@gluestack-ui/utils/nativewind-utils';
+import React, { useMemo } from 'react';
+import { Text, View } from 'react-native';
 
-import { Svg } from 'react-native-svg';
+import type { Svg } from 'react-native-svg';
+
 const SCOPE = 'BADGE';
 
 const badgeStyle = tva({
@@ -120,10 +121,9 @@ function Badge({
   className,
   ...props
 }: { className?: string } & IBadgeProps) {
-
   const contextValue = useMemo(
     () => ({ action, variant, size }),
-    [action, variant, size]
+    [action, variant, size],
   );
 
   return (

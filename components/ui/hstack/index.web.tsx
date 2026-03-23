@@ -1,5 +1,5 @@
-import React from 'react';
 import type { VariantProps } from '@gluestack-ui/utils/nativewind-utils';
+import React from 'react';
 import { hstackStyle } from './styles';
 
 type IHStackProps = React.ComponentPropsWithoutRef<'div'> &
@@ -18,7 +18,7 @@ const HStack = React.forwardRef<React.ComponentRef<'div'>, IHStackProps>(
         ref={ref}
       />
     );
-  }
+  },
 );
 
 HStack.displayName = 'HStack';

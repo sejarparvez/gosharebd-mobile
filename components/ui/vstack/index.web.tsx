@@ -1,5 +1,5 @@
-import React from 'react';
 import type { VariantProps } from '@gluestack-ui/utils/nativewind-utils';
+import React from 'react';
 
 import { vstackStyle } from './styles';
 
@@ -19,7 +19,7 @@ const VStack = React.forwardRef<React.ComponentRef<'div'>, IVStackProps>(
         ref={ref}
       />
     );
-  }
+  },
 );
 
 VStack.displayName = 'VStack';
