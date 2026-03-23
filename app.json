@@ -73,7 +73,8 @@
 
     "extra": {
       "eas": {
-       "projectId": "47ae078d-f72f-46db-af6d-1a6844572250"
+      "projectId": "47ae078d-f72f-46db-af6d-1a6844572250",
+      "userInterfaceStyle": "automatic"
       }
     }
   }

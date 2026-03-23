@@ -1,30 +1,42 @@
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { Tabs } from 'expo-router';
 import { CircleUserRound, Heart, Home, Package } from 'lucide-react-native';
+import { useColorScheme } from 'nativewind';
 import { useEffect } from 'react';
 import { Platform, Pressable, View } from 'react-native';
 import Animated, {
+  interpolate,
   interpolateColor,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
+  withTiming,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-// ── Design tokens ───────────────────────────────────────────────────
-const C = {
+// ── Design tokens ────────────────────────────────────────────────────
+const LIGHT = {
   primary: '#5a9e2f',
   white: '#ffffff',
   background: '#ffffff',
   border: '#e4e4e7',
   muted: '#a1a1aa',
-  dark: '#1e1d22',
+  shadow: '#1e1d22',
 };
 
-const SPRING = { damping: 16, stiffness: 300, mass: 0.6 };
-const PRESS_SPRING = { damping: 10, stiffness: 500 };
+const DARK = {
+  primary: '#5a9e2f',
+  white: '#ffffff',
+  background: '#27272a',
+  border: '#3f3f46',
+  muted: '#71717a',
+  shadow: '#000000',
+};
 
-// ── Tab definitions ─────────────────────────────────────────────────
+const SPRING = { damping: 18, stiffness: 260, mass: 0.7 };
+const PRESS_SPRING = { damping: 8, stiffness: 600 };
+
+// ── Tab definitions ──────────────────────────────────────────────────
 const TABS = [
   { name: 'index', label: 'Home', Icon: Home },
   { name: 'packages', label: 'Packages', Icon: Package },
@@ -32,25 +44,25 @@ const TABS = [
   { name: 'account', label: 'Account', Icon: CircleUserRound },
 ];
 
-// ── Single tab item ─────────────────────────────────────────────────
+// ── Tab item ─────────────────────────────────────────────────────────
 function TabItem({
   icon: Icon,
   label,
   focused,
   onPress,
   onLongPress,
+  colors,
 }: {
   icon: React.ElementType;
   label: string;
   focused: boolean;
   onPress: () => void;
   onLongPress: () => void;
+  colors: typeof LIGHT;
 }) {
-  // ← KEY FIX: drive animations from a shared value, not the raw prop
   const progress = useSharedValue(focused ? 1 : 0);
   const pressScale = useSharedValue(1);
 
-  // Sync the shared value whenever the focused prop changes
   useEffect(() => {
     progress.value = withSpring(focused ? 1 : 0, SPRING);
   }, [focused, progress]);
@@ -63,20 +75,32 @@ function TabItem({
     backgroundColor: interpolateColor(
       progress.value,
       [0, 1],
-      ['transparent', C.primary],
+      ['transparent', colors.primary],
     ),
     transform: [
-      { scale: withSpring(progress.value === 1 ? 1 : 0.75, SPRING) },
-      { translateY: progress.value * -10 },
+      {
+        scale: withSpring(
+          interpolate(progress.value, [0, 1], [0.82, 1]),
+          SPRING,
+        ),
+      },
+      {
+        translateY: withSpring(
+          interpolate(progress.value, [0, 1], [0, -8]),
+          SPRING,
+        ),
+      },
     ],
-    shadowOpacity: progress.value * 0.32,
+    shadowOpacity: withTiming(interpolate(progress.value, [0, 1], [0, 0.3]), {
+      duration: 200,
+    }),
   }));
 
   return (
     <Pressable
       style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
       onPress={() => {
-        pressScale.value = withSpring(0.85, PRESS_SPRING, () => {
+        pressScale.value = withSpring(0.87, PRESS_SPRING, () => {
           pressScale.value = withSpring(1, SPRING);
         });
         onPress();
@@ -86,7 +110,7 @@ function TabItem({
       accessibilityLabel={label}
       accessibilityState={{ selected: focused }}
     >
-      <Animated.View style={itemStyle}>
+      <Animated.View style={[{ alignItems: 'center' }, itemStyle]}>
         <Animated.View
           style={[
             {
@@ -95,18 +119,18 @@ function TabItem({
               borderRadius: 24,
               alignItems: 'center',
               justifyContent: 'center',
-              shadowColor: C.primary,
+              shadowColor: colors.primary,
               shadowOffset: { width: 0, height: 6 },
-              shadowRadius: 12,
+              shadowRadius: 14,
               elevation: focused ? 8 : 0,
             },
             bubbleStyle,
           ]}
         >
           <Icon
-            size={22}
-            color={focused ? C.white : C.muted}
-            strokeWidth={focused ? 2.2 : 1.7}
+            size={26}
+            color={focused ? colors.white : colors.muted}
+            strokeWidth={focused ? 2.1 : 1.6}
           />
         </Animated.View>
       </Animated.View>
@@ -114,10 +138,12 @@ function TabItem({
   );
 }
 
-// ── Custom floating tab bar ─────────────────────────────────────────
+// ── Custom floating tab bar ───────────────────────────────────────────
 function CustomTabBar({ state, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
   const bottomInset = insets.bottom > 0 ? insets.bottom + 8 : 16;
+  const { colorScheme } = useColorScheme();
+  const C = colorScheme === 'dark' ? DARK : LIGHT;
 
   return (
     <View
@@ -137,10 +163,10 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
           flexDirection: 'row',
           alignItems: 'center',
           paddingHorizontal: 8,
-          shadowColor: C.dark,
-          shadowOffset: { width: 0, height: 10 },
-          shadowOpacity: 0.1,
-          shadowRadius: 28,
+          shadowColor: C.shadow,
+          shadowOffset: { width: 0, height: 12 },
+          shadowOpacity: 0.16,
+          shadowRadius: 32,
           elevation: 24,
           borderWidth: 1,
           borderColor: C.border,
@@ -158,6 +184,7 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
               icon={tab.Icon}
               label={tab.label}
               focused={focused}
+              colors={C}
               onPress={() => {
                 const event = navigation.emit({
                   type: 'tabPress',
@@ -179,7 +206,7 @@ function CustomTabBar({ state, navigation }: BottomTabBarProps) {
   );
 }
 
-// ── Root layout ─────────────────────────────────────────────────────
+// ── Root layout ───────────────────────────────────────────────────────
 export default function TabLayout() {
   return (
     <Tabs
