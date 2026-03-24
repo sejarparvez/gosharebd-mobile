@@ -1,7 +1,3 @@
-import { Badge, BadgeText } from '@/components/ui/badge';
-import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Text } from '@/components/ui/text';
 import { Image } from 'expo-image';
 import {
   AlertTriangle,
@@ -16,6 +12,10 @@ import {
 import { useColorScheme } from 'nativewind';
 import { FlatList, Pressable, StyleSheet, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
+import { Badge, BadgeText } from '@/components/ui/badge';
+import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Text } from '@/components/ui/text';
 
 import { useAllPackages } from '@/services/packages';
 import type { AllPackagesType } from '@/types/package';

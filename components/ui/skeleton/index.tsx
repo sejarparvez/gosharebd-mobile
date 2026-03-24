@@ -1,5 +1,6 @@
-import React, { forwardRef } from 'react';
 import type { VariantProps } from '@gluestack-ui/utils/nativewind-utils';
+import type React from 'react';
+import { forwardRef } from 'react';
 import { Animated, Easing, Platform, View } from 'react-native';
 import { skeletonStyle, skeletonTextStyle } from './styles';
 
@@ -30,7 +31,7 @@ const Skeleton = forwardRef<
     speed = 2,
     ...props
   },
-  ref
+  ref,
 ) {
   const pulseAnim = new Animated.Value(1);
   const customTimingFunction = Easing.bezier(0.4, 0, 0.6, 1);
@@ -91,7 +92,7 @@ const SkeletonText = forwardRef<
     children,
     ...props
   },
-  ref
+  ref,
 ) {
   if (!isLoaded) {
     if (_lines) {
@@ -104,6 +105,7 @@ const SkeletonText = forwardRef<
         >
           {Array.from({ length: _lines }).map((_, index) => (
             <Skeleton
+              // biome-ignore lint/suspicious/noArrayIndexKey: this is fine
               key={index}
               className={`${startColor} ${skeletonTextStyle({
                 class: className,
