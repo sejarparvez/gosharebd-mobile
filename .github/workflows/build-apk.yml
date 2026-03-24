@@ -34,21 +34,20 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v2
 
-      - name: Create Google-services.json placeholder
-        run: |
-          echo '{}' > android/app/google-services.json
-        env:
-          # If you have a real google-services.json, add it as a secret
-          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
-
       - name: Create .env file
         run: |
-          echo "EXPO_PUBLIC_API_URL=${{ secrets.EXPO_PUBLIC_API_URL }}" > .env
-        env:
-          EXPO_PUBLIC_API_URL: https://gosharebd.com
+          echo "EXPO_PUBLIC_API_URL=${{ secrets.EXPO_PUBLIC_API_URL || 'https://gosharebd.com' }}" > .env
 
       - name: Prebuild Android
         run: npx expo prebuild --platform android --clean
+
+      - name: Create Google-services.json placeholder
+        run: |
+          if [ -f "android/app/google-services.json" ]; then
+            echo "google-services.json already exists"
+          else
+            echo '{}' > android/app/google-services.json
+          fi
 
       - name: Build Release APK
         run: |
