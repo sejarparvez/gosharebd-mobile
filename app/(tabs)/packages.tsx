@@ -1,8 +1,8 @@
 // app/(tabs)/packages.tsx
 
-import PackagesList from '@/components/packages/packageslist';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import PackagesList from '@/components/packages/packageslist';
 
 export default function PackagesScreen() {
   const router = useRouter();

@@ -1,5 +1,6 @@
 // components/home/footer.tsx
 
+import { useRouter } from 'expo-router';
 import {
   Compass,
   Facebook,
@@ -16,7 +17,12 @@ import Newsletter from './newsletter';
 
 // ─── Data ────────────────────────────────────────────────────────────────────
 
-const nav = [
+type FooterLink = {
+  label: string;
+  href: string;
+};
+
+const nav: { label: string; links: FooterLink[] }[] = [
   {
     label: 'Company',
     links: [
@@ -72,11 +78,12 @@ interface FooterProps {
 }
 
 export default function Footer({ onNavPress }: FooterProps) {
+  const router = useRouter();
   const year = new Date().getFullYear();
 
   const handlePress = (href: string | null) => {
     if (!href) return;
-    // Internal routes go through the prop; external URLs open in browser
+    // External URLs open in browser
     if (
       href.startsWith('http') ||
       href.startsWith('mailto') ||
@@ -84,7 +91,12 @@ export default function Footer({ onNavPress }: FooterProps) {
     ) {
       Linking.openURL(href);
     } else {
-      onNavPress?.(href);
+      // Internal routes - try onNavPress callback first, then use router
+      if (onNavPress) {
+        onNavPress(href);
+      } else {
+        router.push(href as Parameters<typeof router.push>[0]);
+      }
     }
   };
 
