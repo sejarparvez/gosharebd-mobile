@@ -16,13 +16,12 @@ import {
   ScrollView,
   StyleSheet,
   View,
-  type ViewToken,
 } from 'react-native';
-import Animated, { FadeInUp, ZoomIn } from 'react-native-reanimated';
+import Animated, { ZoomIn } from 'react-native-reanimated';
 import { Button, ButtonIcon, ButtonText } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 
-// ─── Data ────────────────────────────────────────────────────────────────────
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 const destinations = [
   {
@@ -71,84 +70,7 @@ const stats = [
 
 const features = ['Free Cancellation', 'Best Price', '24/7 Support'];
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-
-// ─── Static styles (no css-interop involved) ─────────────────────────────────
-
-const s = StyleSheet.create({
-  pillActive: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 999,
-    backgroundColor: '#5a9e2f',
-  },
-  pillInactive: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 999,
-    backgroundColor: '#f4f4f5', // background-100
-  },
-  pillInactiveDark: {
-    backgroundColor: '#27272a', // background-800
-  },
-  pillTextActive: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#ffffff',
-  },
-  pillTextInactive: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#71717a', // typography-500
-  },
-
-  tagBadge: {
-    position: 'absolute',
-    top: 16,
-    left: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    backgroundColor: 'rgba(90,158,47,0.9)',
-    borderRadius: 999,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-  },
-  trustPill: {
-    position: 'absolute',
-    top: 16,
-    right: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    backgroundColor: 'rgba(255,255,255,0.92)',
-    borderRadius: 999,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-  },
-  trustPillDark: {
-    backgroundColor: 'rgba(30,29,34,0.92)',
-  },
-  locationBox: {
-    position: 'absolute',
-    bottom: 24,
-    left: 16,
-  },
-  locationRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    marginBottom: 2,
-  },
-});
-
-// ─── StatCounter ─────────────────────────────────────────────────────────────
+const CAROUSEL_HEIGHT = SCREEN_WIDTH * 0.7;
 
 function StatCounter({
   stat,
@@ -205,9 +127,9 @@ function StatCounter({
   return (
     <Animated.View
       entering={ZoomIn.delay(delay).duration(400)}
-      className='flex-1 items-center py-2'
+      className='flex-1 items-center py-3'
     >
-      <Text className='text-xl font-bold text-typography-950 dark:text-typography-0 tabular-nums'>
+      <Text className='text-lg font-bold text-typography-950 dark:text-typography-0 tabular-nums'>
         {displayed}
       </Text>
       <Text className='text-[10px] text-typography-500 mt-0.5'>
@@ -217,110 +139,129 @@ function StatCounter({
   );
 }
 
-// ─── Main Hero ────────────────────────────────────────────────────────────────
-
-interface HeroProps {
+export default function Hero({
+  onExploreTours,
+  onContact,
+}: {
   onExploreTours?: () => void;
   onContact?: () => void;
-}
-
-export default function Hero({ onExploreTours, onContact }: HeroProps) {
+}) {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
-
   const flatListRef = useRef<FlatList>(null);
   const [activeIdx, setActiveIdx] = useState(0);
-  const autoplayRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
-    autoplayRef.current = setInterval(() => {
+    const interval = setInterval(() => {
       const next = (activeIdx + 1) % destinations.length;
       flatListRef.current?.scrollToIndex({ index: next, animated: true });
       setActiveIdx(next);
     }, 5000);
-    return () => {
-      if (autoplayRef.current) clearInterval(autoplayRef.current);
-    };
+    return () => clearInterval(interval);
   }, [activeIdx]);
 
-  const onViewableItemsChanged = useRef(
-    ({ viewableItems }: { viewableItems: ViewToken[] }) => {
-      if (viewableItems.length > 0 && viewableItems[0].index != null) {
-        setActiveIdx(viewableItems[0].index);
-      }
-    },
-  ).current;
-
-  const viewabilityConfig = useRef({
-    viewAreaCoveragePercentThreshold: 50,
-  }).current;
-
   return (
-    <View className='flex-1'>
-      {/* ── Carousel ── */}
-      <FlatList
-        ref={flatListRef}
-        data={destinations}
-        horizontal
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        keyExtractor={(_, i) => String(i)}
-        onViewableItemsChanged={onViewableItemsChanged}
-        viewabilityConfig={viewabilityConfig}
-        getItemLayout={(_, index) => ({
-          length: SCREEN_WIDTH,
-          offset: SCREEN_WIDTH * index,
-          index,
-        })}
-        renderItem={({ item: dest, index: idx }) => (
-          <View style={{ width: SCREEN_WIDTH, height: SCREEN_WIDTH * 0.92 }}>
-            <Image
-              source={{ uri: dest.image }}
-              style={{ width: '100%', height: '100%' }}
-              contentFit='cover'
-              priority={idx === 0 ? 'high' : 'normal'}
-            />
+    <View>
+      {/* Carousel */}
+      <View style={{ height: CAROUSEL_HEIGHT }}>
+        <FlatList
+          ref={flatListRef}
+          data={destinations}
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={(_, i) => String(i)}
+          getItemLayout={(_, index) => ({
+            length: SCREEN_WIDTH,
+            offset: SCREEN_WIDTH * index,
+            index,
+          })}
+          onMomentumScrollEnd={(e) => {
+            const offset = e.nativeEvent.contentOffset.x;
+            const index = Math.round(offset / SCREEN_WIDTH);
+            setActiveIdx(index);
+          }}
+          renderItem={({ item: dest, index: idx }) => (
+            <View style={{ width: SCREEN_WIDTH, height: CAROUSEL_HEIGHT }}>
+              <Image
+                source={{ uri: dest.image }}
+                style={{ width: '100%', height: '100%' }}
+                contentFit='cover'
+                priority={idx === 0 ? 'high' : 'normal'}
+              />
+              <LinearGradient
+                colors={['rgba(0,0,0,0.3)', 'transparent', 'rgba(0,0,0,0.7)']}
+                locations={[0, 0.4, 1]}
+                style={StyleSheet.absoluteFillObject}
+              />
 
-            <LinearGradient
-              colors={['rgba(0,0,0,0.25)', 'transparent', 'rgba(0,0,0,0.78)']}
-              locations={[0, 0.38, 1]}
-              style={StyleSheet.absoluteFillObject}
-            />
-
-            {/* Tag badge — plain StyleSheet, no className */}
-            <View style={s.tagBadge}>
-              <Sparkles size={12} color='#fff' />
-              <Text style={{ color: '#fff', fontSize: 12, fontWeight: '600' }}>
-                {dest.tag}
-              </Text>
-            </View>
-
-            {/* Trust pill — plain StyleSheet, no className */}
-            <View style={[s.trustPill, isDark && s.trustPillDark]}>
-              <Star size={13} fill='#facc15' color='#facc15' />
-              <Text
+              {/* Tag */}
+              <View
                 style={{
-                  fontSize: 12,
-                  fontWeight: '700',
-                  color: isDark ? '#fafafa' : '#18181b',
+                  position: 'absolute',
+                  top: 16,
+                  left: 16,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 4,
+                  backgroundColor: 'rgba(90,158,47,0.9)',
+                  borderRadius: 20,
+                  paddingHorizontal: 12,
+                  paddingVertical: 6,
                 }}
               >
-                4.8
-              </Text>
-              <Text style={{ fontSize: 12, color: '#71717a' }}>· 10K+</Text>
-            </View>
+                <Sparkles size={12} color='#fff' />
+                <Text
+                  style={{ color: '#fff', fontSize: 12, fontWeight: '600' }}
+                >
+                  {dest.tag}
+                </Text>
+              </View>
 
-            {/* Location text */}
-            {activeIdx === idx && (
-              <Animated.View
-                entering={FadeInUp.duration(350)}
-                style={s.locationBox}
+              {/* Rating */}
+              <View
+                style={{
+                  position: 'absolute',
+                  top: 16,
+                  right: 16,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 4,
+                  backgroundColor: 'rgba(255,255,255,0.95)',
+                  borderRadius: 20,
+                  paddingHorizontal: 10,
+                  paddingVertical: 6,
+                }}
               >
-                <View style={s.locationRow}>
-                  <MapPin size={16} color='rgba(255,255,255,0.8)' />
+                <Star size={13} fill='#facc15' color='#facc15' />
+                <Text
+                  style={{ fontSize: 12, fontWeight: '700', color: '#18181b' }}
+                >
+                  4.8
+                </Text>
+              </View>
+
+              {/* Location */}
+              <View
+                style={{
+                  position: 'absolute',
+                  bottom: 16,
+                  left: 16,
+                  right: 16,
+                }}
+              >
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: 6,
+                    marginBottom: 4,
+                  }}
+                >
+                  <MapPin size={14} color='rgba(255,255,255,0.8)' />
                   <Text
                     style={{
-                      fontSize: 14,
+                      fontSize: 12,
                       color: 'rgba(255,255,255,0.8)',
                       fontWeight: '500',
                     }}
@@ -329,69 +270,66 @@ export default function Hero({ onExploreTours, onContact }: HeroProps) {
                   </Text>
                 </View>
                 <Text
-                  style={{ fontSize: 24, fontWeight: '800', color: '#fff' }}
+                  style={{ fontSize: 22, fontWeight: '800', color: '#fff' }}
                 >
                   {dest.name}
                 </Text>
                 <Text
                   style={{
-                    fontSize: 14,
+                    fontSize: 13,
                     color: 'rgba(255,255,255,0.8)',
                     marginTop: 2,
                   }}
                 >
                   {dest.subtitle}
                 </Text>
-              </Animated.View>
-            )}
-          </View>
-        )}
-      />
+              </View>
+            </View>
+          )}
+        />
+      </View>
 
-      {/* After FlatList, before Content Block */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={{ marginTop: 12, marginBottom: 12 }}
-        contentContainerStyle={{
-          paddingHorizontal: 16,
-          gap: 8,
-        }}
-      >
-        {destinations.map((dest, idx) => (
-          <Button
-            // biome-ignore lint/suspicious/noArrayIndexKey: this is fine
-            key={idx}
-            size='xs'
-            variant={idx === activeIdx ? 'solid' : 'outline'}
-            className='rounded-full'
-            onPress={() => {
-              flatListRef.current?.scrollToIndex({
-                index: idx,
-                animated: true,
-              });
-              setActiveIdx(idx);
-            }}
-          >
-            <ButtonText>{dest.name}</ButtonText>
-          </Button>
-        ))}
-      </ScrollView>
+      {/* Destination Tabs */}
+      <View className='px-4 py-3 -mt-6 relative z-10'>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ gap: 8 }}
+        >
+          {destinations.map((dest, idx) => (
+            <Button
+              // biome-ignore lint/suspicious/noArrayIndexKey: static list
+              key={idx}
+              size='sm'
+              variant={idx === activeIdx ? 'solid' : 'outline'}
+              className='rounded-full'
+              onPress={() => {
+                flatListRef.current?.scrollToIndex({
+                  index: idx,
+                  animated: true,
+                });
+                setActiveIdx(idx);
+              }}
+            >
+              <ButtonText className='text-xs'>{dest.name}</ButtonText>
+            </Button>
+          ))}
+        </ScrollView>
+      </View>
 
-      {/* ── Content Block ── */}
-      <View className='px-4 pb-8 gap-5'>
+      {/* Content */}
+      <View className='px-4 pb-3 gap-4'>
         {/* Headline */}
-        <View>
-          <Text className='text-4xl font-extrabold tracking-tight leading-snug text-typography-950 dark:text-typography-0'>
+        <View className='gap-2 py-4'>
+          <Text className='text-3xl font-extrabold tracking-tight text-typography-950 dark:text-typography-0 leading-tight'>
             See The Beauty.{'\n'}
-            <Text className='text-5xl font-extrabold text-primary-500'>
+            <Text className='text-primary-500 font-extrabold text-3xl'>
               GoShare
             </Text>{' '}
             The Story.
           </Text>
-          <Text className='text-typography-500 text-sm mt-2.5 leading-relaxed'>
-            10,000+ travelers have found their paradise with us. Guided tours
-            across Bangladesh's most breathtaking destinations.
+          <Text className='text-sm text-typography-500 mt-1 leading-relaxed'>
+            10,000+ travelers have found their paradise with us.
           </Text>
         </View>
 
@@ -399,7 +337,7 @@ export default function Hero({ onExploreTours, onContact }: HeroProps) {
         <View className='flex-row gap-3'>
           <Button
             size='lg'
-            className='flex-1 h-12 bg-primary-500 shadow-soft-2 rounded-lg'
+            className='flex-1 h-12 bg-primary-500 rounded-lg'
             onPress={onExploreTours}
           >
             <ButtonText className='text-white text-sm font-semibold'>
@@ -407,7 +345,6 @@ export default function Hero({ onExploreTours, onContact }: HeroProps) {
             </ButtonText>
             <ButtonIcon as={ArrowRight} className='text-white ml-1' />
           </Button>
-
           <Button
             size='lg'
             variant='outline'
@@ -418,17 +355,13 @@ export default function Hero({ onExploreTours, onContact }: HeroProps) {
               as={Headset}
               className='text-typography-700 dark:text-typography-300'
             />
-            <ButtonText className='text-typography-700 dark:text-typography-300 text-sm ml-1'>
-              Contact
-            </ButtonText>
           </Button>
         </View>
 
-        {/* Social Proof Bar */}
+        {/* Social Proof */}
         <View className='flex-row items-center justify-between rounded-2xl bg-background-50 dark:bg-background-900 px-4 py-3 border border-outline-200 dark:border-outline-700'>
-          <View className='flex-row items-center gap-2.5'>
-            {/* Stacked avatars */}
-            <View className='flex-row'>
+          <View className='flex-row items-center gap-3'>
+            <View style={{ flexDirection: 'row' }}>
               {travelers.map((avatar, idx) => (
                 <Animated.View
                   // biome-ignore lint/suspicious/noArrayIndexKey: static list
@@ -436,9 +369,9 @@ export default function Hero({ onExploreTours, onContact }: HeroProps) {
                   entering={ZoomIn.delay(200 + idx * 70).duration(350)}
                   style={{
                     marginLeft: idx === 0 ? 0 : -10,
-                    width: 32,
-                    height: 32,
-                    borderRadius: 16,
+                    width: 28,
+                    height: 28,
+                    borderRadius: 14,
                     borderWidth: 2,
                     borderColor: isDark ? '#1e1d22' : '#ffffff',
                     overflow: 'hidden',
@@ -446,51 +379,44 @@ export default function Hero({ onExploreTours, onContact }: HeroProps) {
                 >
                   <Image
                     source={{ uri: avatar }}
-                    style={{ width: 32, height: 32 }}
+                    style={{ width: 28, height: 28 }}
                     contentFit='cover'
                   />
                 </Animated.View>
               ))}
             </View>
-
             <View>
               <Text className='text-xs font-semibold text-typography-950 dark:text-typography-0'>
-                10,247 happy travelers
+                10,247 travelers
               </Text>
-              <View className='flex-row gap-0.5 mt-0.5'>
+              <View style={{ flexDirection: 'row', gap: 2 }}>
                 {[...Array(5)].map((_, i) => (
-                  <Star
-                    // biome-ignore lint/suspicious/noArrayIndexKey: static list
-                    key={i}
-                    size={12}
-                    fill='#facc15'
-                    color='#facc15'
-                  />
+                  // biome-ignore lint/suspicious/noArrayIndexKey: static list
+                  <Star key={i} size={10} fill='#facc15' color='#facc15' />
                 ))}
               </View>
             </View>
           </View>
-
           <View className='flex-row items-center gap-1.5 bg-success-100 dark:bg-success-900/30 rounded-full px-3 py-1.5'>
-            <CheckCircle2 size={16} color='#5a9e2f' />
+            <CheckCircle2 size={14} color='#5a9e2f' />
             <Text className='text-xs font-bold text-success-700 dark:text-success-400'>
-              98% Happy
+              98%
             </Text>
           </View>
         </View>
 
-        {/* Trust Micro-copy */}
-        <View className='flex-row items-center justify-center gap-4'>
+        {/* Trust Features */}
+        <View className='flex-row items-center justify-center gap-6'>
           {features.map((f) => (
             <View key={f} className='flex-row items-center gap-1'>
-              <CheckCircle2 size={13} color='#5a9e2f' />
+              <CheckCircle2 size={12} color='#5a9e2f' />
               <Text className='text-[10px] text-typography-500'>{f}</Text>
             </View>
           ))}
         </View>
 
-        {/* Stats Strip */}
-        <View className='flex-row pt-1 border-t border-outline-100 dark:border-outline-800'>
+        {/* Stats */}
+        <View className='flex-row pt-2 border-t border-outline-100 dark:border-outline-800'>
           {stats.map((stat, i) => (
             <StatCounter key={stat.label} stat={stat} delay={i * 100} />
           ))}

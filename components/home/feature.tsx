@@ -138,7 +138,7 @@ function FeatureCard({
 
 export default function Features() {
   return (
-    <View className='px-4 pt-10 pb-10 border-b border-outline-200 dark:border-outline-700 bg-background-0 dark:bg-background-950'>
+    <View className='px-4 pt-6 pb-6 border-b border-outline-200 dark:border-outline-700 bg-background-0 dark:bg-background-950'>
       {/* ── Section Header ── */}
       <Animated.View entering={FadeInUp.delay(50).duration(500)}>
         <View className='mb-7'>
