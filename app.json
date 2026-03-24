@@ -9,20 +9,16 @@
     "icon": "./assets/images/icon.png",
     "scheme": "gosharebd",
     "userInterfaceStyle": "automatic",
-    
-
     "splash": {
       "image": "./assets/images/splash-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#208AEF"
     },
-
     "ios": {
       "icon": "./assets/expo.icon/icon.json",
       "bundleIdentifier": "com.gosharebd.app",
       "supportsTablet": true
     },
-
     "android": {
       "package": "com.gosharebd.app",
       "versionCode": 1,
@@ -34,13 +30,11 @@
       },
       "predictiveBackGestureEnabled": false
     },
-
     "web": {
       "bundler": "metro",
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
-
     "plugins": [
       "expo-router",
       "expo-font",
@@ -63,17 +57,18 @@
             "light": "#ffffff"
           }
         }
-      ]
+      ],
+      "expo-secure-store",
+      "expo-web-browser",
+      "@react-native-google-signin/google-signin"
     ],
-
     "experiments": {
       "typedRoutes": true
     },
-
     "extra": {
       "eas": {
-      "projectId": "47ae078d-f72f-46db-af6d-1a6844572250",
-      "userInterfaceStyle": "automatic"
+        "projectId": "47ae078d-f72f-46db-af6d-1a6844572250",
+        "userInterfaceStyle": "automatic"
       }
     }
   }
