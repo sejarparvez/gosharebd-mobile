@@ -219,24 +219,9 @@ export default function Hero({
               </View>
 
               {/* Rating */}
-              <View
-                style={{
-                  position: 'absolute',
-                  top: 16,
-                  right: 16,
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: 4,
-                  backgroundColor: 'rgba(255,255,255,0.95)',
-                  borderRadius: 20,
-                  paddingHorizontal: 10,
-                  paddingVertical: 6,
-                }}
-              >
+              <View className='bg-background-50 dark:bg-background-950 flex flex-row items-center gap-2 rounded-2xl px-2 py-1 absolute top-4 right-4'>
                 <Star size={13} fill='#facc15' color='#facc15' />
-                <Text
-                  style={{ fontSize: 12, fontWeight: '700', color: '#18181b' }}
-                >
+                <Text className='text-typography-black dark:text-typography-0 text-xs'>
                   4.8
                 </Text>
               </View>
